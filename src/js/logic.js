@@ -16,7 +16,7 @@ function pad(number) {
 // ---------- Cupos ----------
 
 export function spotsLeft(event) {
-  return event.capacity - event.registered;
+  return Math.max(0, event.capacity - event.registered);
 }
 
 export function isFull(event) {
@@ -24,8 +24,10 @@ export function isFull(event) {
 }
 
 export function spotsLabel(event) {
-  if (isFull(event)) {
-    return 'Cupo lleno';
+export function spotsLeft(event) {
+  const remaining = event.capacity - event.registered;
+  return remaining < 0 ? 0 : remaining;
+}
   }
   return `${spotsLeft(event)} lugares`;
 }
