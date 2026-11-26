@@ -15,6 +15,9 @@ function pad(number) {
 
 // ---------- Cupos ----------
 
+// ---------- Cupos ----------
+
+// ---------- Cupos ----------
 export function spotsLeft(event) {
   return Math.max(0, event.capacity - event.registered);
 }
@@ -24,25 +27,21 @@ export function isFull(event) {
 }
 
 export function spotsLabel(event) {
-export function spotsLeft(event) {
-  const remaining = event.capacity - event.registered;
-  return remaining < 0 ? 0 : remaining;
+  if (isFull(event)) return 'Cupo lleno';
+  const left = spotsLeft(event);
+  return `${left} ${left === 1 ? 'lugar' : 'lugares'}`;
 }
-  }
-  return `${spotsLeft(event)} lugares`;
-}
-
 // ---------- Precio ----------
 
 export function formatPrice(price) {
-  return `$${price}`;
+return price === 0 ? 'Gratis' : `$${price}`;
 }
 
 // ---------- Fechas ----------
 
 export function formatShortDate(dateStr) {
   const date = toDate(dateStr);
-  return `${pad(date.getDate())}/${pad(date.getMonth())}`;
+return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}`;
 }
 
 export function weekdayName(dateStr) {
@@ -55,9 +54,7 @@ export function daysUntil(dateStr, todayStr) {
 
 export function countdownLabel(dateStr, todayStr) {
   const days = daysUntil(dateStr, todayStr);
-  if (days === 0) {
-    return 'Hoy';
-  }
+  if (days < 0) return 'Finalizado';
   if (days === 1) {
     return 'Mañana';
   }
@@ -65,16 +62,17 @@ export function countdownLabel(dateStr, todayStr) {
 }
 
 export function sortByDate(events) {
-  return [...events].sort((a, b) =>
-    formatShortDate(a.date).localeCompare(formatShortDate(b.date)),
-  );
+  return [...events].sort((a, b) => a.date.localeCompare(b.date));
 }
 
 // ---------- Búsqueda y filtros ----------
 
 export function matchesSearch(event, query) {
-  const text = `${event.title} ${event.venue} ${event.categoryLabel}`.toLowerCase();
-  return text.includes(query.trim().toLowerCase());
+  const withoutAccents = (value) =>
+    value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+  const text = `${event.title} ${event.venue} ${event.categoryLabel}`;
+  return withoutAccents(text).includes(withoutAccents(query.trim()));
 }
 
 export function filterEvents(events, { query = '', category = 'todas', day = null, onlyMine = false, mine = [] } = {}) {
